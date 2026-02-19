@@ -5,7 +5,7 @@ import { getRoboticStatus } from './services/geminiService';
 import { 
   Play, Pause, RotateCcw, Cpu, Shield, Zap, 
   Terminal, Activity, Layers, Globe, Radio, 
-  Settings, Database
+  Settings, Database, Sun, Moon
 } from 'lucide-react';
 
 const INITIAL_TIME = 5 * 60; // 5 minutes in seconds
@@ -15,8 +15,13 @@ const App: React.FC = () => {
   const [status, setStatus] = useState<TimerStatus>(TimerStatus.IDLE);
   const [messages, setMessages] = useState<RobotMessage[]>([]);
   const [mousePos, setMousePos] = useState({ x: 0, y: 0 });
+  const [isDark, setIsDark] = useState(true);
   
   const timerRef = useRef<number | null>(null);
+
+  useEffect(() => {
+    document.body.classList.toggle('light-mode', !isDark);
+  }, [isDark]);
 
   const addMessage = useCallback((text: string, type: RobotMessage['type'] = 'info') => {
     const newMessage: RobotMessage = {
@@ -118,7 +123,7 @@ const App: React.FC = () => {
 
   return (
     <div 
-      className="relative w-full h-screen bg-black flex items-center justify-center overflow-hidden transition-all duration-700 select-none"
+      className={`relative w-full h-screen flex items-center justify-center overflow-hidden transition-all duration-700 select-none ${isDark ? 'bg-black' : 'bg-slate-100'}`}
       onMouseMove={handleMouseMove}
     >
       {/* DEEP SPACE SPATIAL LOGIC RAIN */}
@@ -199,7 +204,7 @@ const App: React.FC = () => {
                   <Globe size={20} className="text-cyan-400" />
                 </div>
                 <div className="flex flex-col">
-                  <span className="font-orbitron text-base tracking-[0.4em] text-white/90 uppercase leading-none">Astrolabe X-0</span>
+                  <span className={`font-orbitron text-base tracking-[0.4em] uppercase leading-none ${isDark ? 'text-white/90' : 'text-slate-900'}`}>Astrolabe X-0</span>
                   <span className="text-[9px] text-cyan-400/50 font-bold tracking-[0.2em] mt-1">ALIEN_LOGIC_KERNEL_v7</span>
                 </div>
               </div>
@@ -214,6 +219,13 @@ const App: React.FC = () => {
                <div className="p-2 bg-white/5 rounded-lg border border-white/5 cursor-pointer hover:bg-white/10 transition-colors">
                   <Settings size={14} className="text-gray-400" />
                </div>
+               <button
+                 onClick={() => setIsDark(d => !d)}
+                 className="p-2 bg-white/5 rounded-lg border border-white/5 cursor-pointer hover:bg-white/10 transition-colors"
+                 title="Toggle light/dark mode"
+               >
+                 {isDark ? <Sun size={14} className="text-gray-400" /> : <Moon size={14} className="text-gray-600" />}
+               </button>
             </div>
           </div>
 
@@ -227,7 +239,7 @@ const App: React.FC = () => {
                 {formatTime(timeLeft)}
               </div>
               <div className={`font-orbitron text-[8.5rem] tracking-tighter select-none transition-all duration-700 relative z-10 
-                ${status === TimerStatus.RUNNING ? 'text-white drop-shadow-[0_0_30px_rgba(0,255,255,0.4)]' : 'text-gray-700'} 
+                ${status === TimerStatus.RUNNING ? `${isDark ? 'text-white' : 'text-slate-900'} drop-shadow-[0_0_30px_rgba(0,255,255,0.4)]` : `${isDark ? 'text-gray-700' : 'text-slate-400'}`} 
                 ${timeLeft < 600 && status === TimerStatus.RUNNING ? 'animate-flicker text-red-500' : ''}`}>
                 {formatTime(timeLeft)}
               </div>
@@ -291,7 +303,7 @@ const App: React.FC = () => {
           <div className="flex items-center justify-between mb-6 border-b border-white/10 pb-4">
              <div className="flex items-center gap-2">
                 <Terminal size={16} className="text-purple-400" />
-                <span className="text-[11px] font-bold text-white/80 uppercase tracking-widest">Neural Log</span>
+                <span className={`text-[11px] font-bold uppercase tracking-widest ${isDark ? 'text-white/80' : 'text-slate-700'}`}>Neural Log</span>
              </div>
              <div className="text-[9px] text-purple-400/50 font-mono">LIVE_X88</div>
           </div>
@@ -344,7 +356,7 @@ const App: React.FC = () => {
       </div>
 
       {/* FOOTER - SYSTEM ANCHOR */}
-      <div className="fixed bottom-10 left-1/2 -translate-x-1/2 z-[60] flex items-center gap-6 bg-black/80 backdrop-blur-xl border border-white/10 px-8 py-3 rounded-full shadow-2xl">
+      <div className={`fixed bottom-10 left-1/2 -translate-x-1/2 z-[60] flex items-center gap-6 backdrop-blur-xl border px-8 py-3 rounded-full shadow-2xl ${isDark ? 'bg-black/80 border-white/10' : 'bg-white/80 border-gray-200'}`}>
          <div className="flex items-center gap-3">
             <div className="w-2.5 h-2.5 bg-green-500 rounded-full animate-pulse shadow-[0_0_10px_rgba(34,197,94,0.6)]" />
             <span className="text-[11px] font-bold text-gray-400 uppercase tracking-[0.3em]">Temporal Protocol Established</span>
