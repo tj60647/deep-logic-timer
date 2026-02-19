@@ -1,9 +1,15 @@
 
 import { GoogleGenAI } from "@google/genai";
 
-const ai = new GoogleGenAI({ apiKey: process.env.API_KEY });
-
 export async function getRoboticStatus(timeLeft: number): Promise<string> {
+  const apiKey = process.env.API_KEY;
+  if (!apiKey) {
+    console.warn("API_KEY is not defined in process.env");
+    return "Core connection lost.";
+  }
+
+  const ai = new GoogleGenAI({ apiKey });
+
   try {
     const minutes = Math.floor(timeLeft / 60);
     const seconds = timeLeft % 60;

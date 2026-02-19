@@ -7,6 +7,10 @@
   <title>MechaClock: Deep Logic Timer</title>
   <script src="https://cdn.tailwindcss.com"></script>
   <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700&family=JetBrains+Mono:wght@300;500&display=swap" rel="stylesheet">
+  <script>
+    // Shim for process.env to prevent crashes in the browser
+    window.process = window.process || { env: {} };
+  </script>
   <style>
     body {
       margin: 0;
@@ -90,5 +94,6 @@
 </head>
 <body>
   <div id="root"></div>
+  <script type="module" src="index.tsx"></script>
 </body>
 </html>
