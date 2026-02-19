@@ -1,10 +1,11 @@
 
-import React, { useState, useEffect, useCallback, useRef, useMemo } from 'react';
+import React, { useState, useEffect, useCallback, useRef } from 'react';
 import { TimerStatus, RobotMessage } from './types';
 import { getRoboticStatus } from './services/geminiService';
 import { CELESTIAL_BODIES, NOTABLE_COMETS, formatOrbitalPeriod } from './services/celestialData';
+import { ThreeScene } from './components/ThreeScene';
 import { 
-  Play, Pause, RotateCcw, Cpu, Shield, Zap, 
+  Play, Pause, RotateCcw,
   Terminal, Activity, Layers, Globe, Radio, 
   Settings, Database, Sun, Moon
 } from 'lucide-react';
@@ -97,57 +98,15 @@ const App: React.FC = () => {
     return `${String(m).padStart(2, '0')}:${String(s).padStart(2, '0')}`;
   };
 
-  const spatialElements = useMemo(() => {
-    const symbols = ["Σ", "Ω", "∞", "∆", "√", "π", "≈", "∂", "∫", "0", "1", "X", "F"];
-    return Array.from({ length: 50 }).map((_, i) => ({
-      id: i,
-      left: `${Math.random() * 100}%`,
-      duration: `${15 + Math.random() * 25}s`,
-      delay: `${Math.random() * -20}s`,
-      text: symbols[Math.floor(Math.random() * symbols.length)],
-      fontSize: `${Math.random() * 18 + 8}px`,
-      color: Math.random() > 0.8 ? 'text-purple-500' : 'text-cyan-500/30',
-      depth: Math.random() * 1000 - 500
-    }));
-  }, []);
 
-  // Rings derived from real NASA orbital period data (CELESTIAL_BODIES, fastest first)
-  const rings = useMemo(() => {
-    return CELESTIAL_BODIES.map(body => ({
-      size: body.size,
-      duration: `${body.visualDurationSeconds}s`,
-      color: body.color,
-      tilt: body.tilt,
-      name: body.name,
-      period: formatOrbitalPeriod(body.orbitalPeriodHours),
-      mission: body.nasaMission,
-    }));
-  }, []);
 
   return (
     <div 
       className={`relative w-full h-screen flex items-center justify-center overflow-hidden transition-all duration-700 select-none ${isDark ? 'bg-black' : 'bg-slate-100'}`}
       onMouseMove={handleMouseMove}
     >
-      {/* DEEP SPACE SPATIAL LOGIC RAIN */}
-      <div className="absolute inset-0 perspective-scene pointer-events-none z-0">
-        {spatialElements.map((el) => (
-          <div
-            key={el.id}
-            className={`absolute animate-spatial-drift font-mono ${el.color}`}
-            style={{ 
-              left: el.left,
-              animationDuration: el.duration,
-              animationDelay: el.delay,
-              fontSize: el.fontSize,
-              transform: `translateZ(${el.depth}px)`,
-              transformStyle: 'preserve-3d'
-            }}
-          >
-            {el.text}
-          </div>
-        ))}
-      </div>
+      {/* THREE.JS ORBITING CAMERA SCENE */}
+      <ThreeScene isRunning={status === TimerStatus.RUNNING} />
 
       <div className="glitch-overlay absolute inset-0 z-50 pointer-events-none" />
 
@@ -158,28 +117,7 @@ const App: React.FC = () => {
           transform: `rotateX(${-mousePos.y * 0.2}deg) rotateY(${mousePos.x * 0.2}deg)`
         }}
       >
-        {/* MULTI-AXIS ORBITING RINGS */}
-        <div className="absolute inset-0 flex items-center justify-center pointer-events-none transform translateZ(-200px)">
-          {rings.map((ring, i) => (
-            <div 
-              key={i}
-              className={`ring-3d ${ring.color}`}
-              style={{ 
-                width: ring.size, 
-                height: ring.size,
-                transform: ring.tilt,
-                animation: `spin-z-cw ${ring.duration} linear infinite`
-              }}
-            >
-              <div className="absolute top-0 left-1/2 -translate-x-1/2 w-2 h-2 bg-current rounded-full blur-[1px] shadow-[0_0_15px_currentColor]" />
-              {i % 2 === 0 && (
-                <div className="absolute bottom-0 left-1/2 -translate-x-1/2 text-[8px] font-bold tracking-[0.4em] opacity-40 uppercase">
-                  {ring.name}/{ring.period}
-                </div>
-              )}
-            </div>
-          ))}
-        </div>
+        {/* MULTI-AXIS ORBITING RINGS rendered in Three.js scene above */}
 
         {/* 3D FLOATING CIRCUITRY NODES */}
         <div className="absolute inset-0 pointer-events-none" style={{ transformStyle: 'preserve-3d' }}>
