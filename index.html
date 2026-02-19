@@ -1,0 +1,94 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>MechaClock: Deep Logic Timer</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700&family=JetBrains+Mono:wght@300;500&display=swap" rel="stylesheet">
+  <style>
+    body {
+      margin: 0;
+      padding: 0;
+      background: #000;
+      color: #e0e0e0;
+      font-family: 'JetBrains+Mono', monospace;
+      overflow: hidden;
+    }
+    .font-orbitron {
+      font-family: 'Orbitron', sans-serif;
+    }
+    
+    @keyframes spin-z-cw { from { transform: rotateZ(0deg); } to { transform: rotateZ(360deg); } }
+    @keyframes spin-z-ccw { from { transform: rotateZ(360deg); } to { transform: rotateZ(0deg); } }
+    @keyframes orbit-x { from { transform: rotateX(0deg); } to { transform: rotateX(360deg); } }
+    @keyframes orbit-y { from { transform: rotateY(0deg); } to { transform: rotateY(360deg); } }
+    
+    @keyframes spatial-drift {
+      0% { transform: translateZ(-1000px) translateY(120vh) rotateX(0deg) rotateY(0deg); opacity: 0; }
+      10% { opacity: 0.4; }
+      90% { opacity: 0.4; }
+      100% { transform: translateZ(500px) translateY(-120vh) rotateX(720deg) rotateY(360deg); opacity: 0; }
+    }
+
+    @keyframes flicker {
+      0%, 100% { opacity: 1; }
+      50% { opacity: 0.8; }
+      52% { opacity: 0.3; }
+      54% { opacity: 0.8; }
+    }
+
+    .animate-spatial-drift { animation: spatial-drift linear infinite; }
+    .animate-spin-z-cw { animation: spin-z-cw linear infinite; }
+    .animate-spin-z-ccw { animation: spin-z-ccw linear infinite; }
+    .animate-orbit-x { animation: orbit-x linear infinite; }
+    .animate-orbit-y { animation: orbit-y linear infinite; }
+    .animate-flicker { animation: flicker 4s infinite; }
+    
+    .glitch-overlay {
+      background: repeating-linear-gradient(
+        0deg,
+        rgba(0, 0, 0, 0.2),
+        rgba(0, 0, 0, 0.2) 1px,
+        transparent 1px,
+        transparent 2px
+      );
+      pointer-events: none;
+    }
+
+    .perspective-scene {
+      perspective: 2000px;
+      transform-style: preserve-3d;
+    }
+    
+    .ring-3d {
+      position: absolute;
+      border: 1px solid rgba(0, 255, 255, 0.15);
+      border-radius: 50%;
+      transform-style: preserve-3d;
+    }
+
+    .glass-pane {
+      background: rgba(255, 255, 255, 0.03);
+      backdrop-filter: blur(12px);
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      box-shadow: 0 0 30px rgba(0, 0, 0, 0.5);
+    }
+  </style>
+<script type="importmap">
+{
+  "imports": {
+    "react/": "https://esm.sh/react@^19.2.4/",
+    "react": "https://esm.sh/react@^19.2.4",
+    "lucide-react": "https://esm.sh/lucide-react@^0.563.0",
+    "react-dom/": "https://esm.sh/react-dom@^19.2.4/",
+    "@google/genai": "https://esm.sh/@google/genai@^1.38.0"
+  }
+}
+</script>
+</head>
+<body>
+  <div id="root"></div>
+</body>
+</html>
