@@ -2,6 +2,7 @@
 import React, { useState, useEffect, useCallback, useRef, useMemo } from 'react';
 import { TimerStatus, RobotMessage } from './types';
 import { getRoboticStatus } from './services/geminiService';
+import { CELESTIAL_BODIES, NOTABLE_COMETS, formatOrbitalPeriod } from './services/celestialData';
 import { 
   Play, Pause, RotateCcw, Cpu, Shield, Zap, 
   Terminal, Activity, Layers, Globe, Radio, 
@@ -52,7 +53,7 @@ const App: React.FC = () => {
         setTimeLeft(prev => {
           if (prev <= 1) {
             setStatus(TimerStatus.COMPLETED);
-            addMessage("VOID PROTOCOL INITIATED. CHRONOS SEAL BROKEN.", "alert");
+            addMessage(`PHOBOS COMPLETES ONE ORBIT IN ${CELESTIAL_BODIES[0].orbitalPeriodHours.toFixed(2)}H. SESSION ELAPSED. NEXT: HALLEY'S COMET ${NOTABLE_COMETS[0].nextPerihelion}.`, "alert");
             return 0;
           }
           return prev - 1;
@@ -110,15 +111,17 @@ const App: React.FC = () => {
     }));
   }, []);
 
+  // Rings derived from real NASA orbital period data (CELESTIAL_BODIES, fastest first)
   const rings = useMemo(() => {
-    return [
-      { size: 400, axis: 'rotateZ', duration: '20s', color: 'border-cyan-500/20', tilt: 'rotateX(70deg)' },
-      { size: 600, axis: 'rotateX', duration: '45s', color: 'border-purple-500/20', tilt: 'rotateY(45deg)' },
-      { size: 800, axis: 'rotateY', duration: '60s', color: 'border-cyan-400/10', tilt: 'rotateX(20deg)' },
-      { size: 500, axis: 'rotateZ', duration: '15s', color: 'border-pink-500/10', tilt: 'rotateY(-60deg)' },
-      { size: 1000, axis: 'rotateX', duration: '90s', color: 'border-blue-500/5', tilt: 'rotateZ(10deg)' },
-      { size: 300, axis: 'rotateY', duration: '10s', color: 'border-white/5', tilt: 'rotateX(-45deg)' },
-    ];
+    return CELESTIAL_BODIES.map(body => ({
+      size: body.size,
+      duration: `${body.visualDurationSeconds}s`,
+      color: body.color,
+      tilt: body.tilt,
+      name: body.name,
+      period: formatOrbitalPeriod(body.orbitalPeriodHours),
+      mission: body.nasaMission,
+    }));
   }, []);
 
   return (
@@ -171,7 +174,7 @@ const App: React.FC = () => {
               <div className="absolute top-0 left-1/2 -translate-x-1/2 w-2 h-2 bg-current rounded-full blur-[1px] shadow-[0_0_15px_currentColor]" />
               {i % 2 === 0 && (
                 <div className="absolute bottom-0 left-1/2 -translate-x-1/2 text-[8px] font-bold tracking-[0.4em] opacity-40 uppercase">
-                  {i % 3 === 0 ? 'Sector' : 'Logic'}_{i}
+                  {ring.name}/{ring.period}
                 </div>
               )}
             </div>
@@ -205,7 +208,7 @@ const App: React.FC = () => {
                 </div>
                 <div className="flex flex-col">
                   <span className={`font-orbitron text-base tracking-[0.4em] uppercase leading-none ${isDark ? 'text-white/90' : 'text-slate-900'}`}>Astrolabe X-0</span>
-                  <span className="text-[9px] text-cyan-400/50 font-bold tracking-[0.2em] mt-1">ALIEN_LOGIC_KERNEL_v7</span>
+                  <span className="text-[9px] text-cyan-400/50 font-bold tracking-[0.2em] mt-1">NASA_JPL_HORIZONS_v7</span>
                 </div>
               </div>
             </div>
@@ -323,10 +326,10 @@ const App: React.FC = () => {
           </div>
         </div>
 
-        {/* FRONT OVERLAY: ATMOSPHERIC SENSORS */}
+        {/* FRONT OVERLAY: ORBITAL SENSOR DATA */}
         <div className="absolute -bottom-10 -left-20 glass-pane w-72 p-6 rounded-[2rem] transform translateZ(600px) rotateX(10deg) pointer-events-none">
            <div className="flex items-center justify-between mb-4">
-              <span className="text-[10px] font-bold text-cyan-400/80 uppercase tracking-[0.2em]">Core Frequency</span>
+              <span className="text-[10px] font-bold text-cyan-400/80 uppercase tracking-[0.2em]">Orbital Frequency</span>
               <Layers size={14} className="text-cyan-500/50" />
            </div>
            <div className="flex items-end gap-1.5 h-16">
@@ -344,12 +347,12 @@ const App: React.FC = () => {
            </div>
            <div className="mt-4 grid grid-cols-2 gap-2">
               <div className="bg-white/5 p-2 rounded-xl border border-white/5">
-                 <div className="text-[8px] text-gray-500 uppercase">Temp</div>
-                 <div className="text-xs text-cyan-400 font-mono">18.4°C</div>
+                 <div className="text-[8px] text-gray-500 uppercase">Phobos T</div>
+                 <div className="text-xs text-cyan-400 font-mono">{formatOrbitalPeriod(CELESTIAL_BODIES[0].orbitalPeriodHours)}</div>
               </div>
               <div className="bg-white/5 p-2 rounded-xl border border-white/5">
-                 <div className="text-[8px] text-gray-500 uppercase">Flux</div>
-                 <div className="text-xs text-purple-400 font-mono">0.82λ</div>
+                 <div className="text-[8px] text-gray-500 uppercase">Io T</div>
+                 <div className="text-xs text-purple-400 font-mono">{formatOrbitalPeriod(CELESTIAL_BODIES[2].orbitalPeriodHours)}</div>
               </div>
            </div>
         </div>
@@ -359,7 +362,7 @@ const App: React.FC = () => {
       <div className={`fixed bottom-10 left-1/2 -translate-x-1/2 z-[60] flex items-center gap-6 backdrop-blur-xl border px-8 py-3 rounded-full shadow-2xl ${isDark ? 'bg-black/80 border-white/10' : 'bg-white/80 border-gray-200'}`}>
          <div className="flex items-center gap-3">
             <div className="w-2.5 h-2.5 bg-green-500 rounded-full animate-pulse shadow-[0_0_10px_rgba(34,197,94,0.6)]" />
-            <span className="text-[11px] font-bold text-gray-400 uppercase tracking-[0.3em]">Temporal Protocol Established</span>
+            <span className="text-[11px] font-bold text-gray-400 uppercase tracking-[0.3em]">NASA JPL Orbital Sync Active</span>
          </div>
          <div className="h-5 w-[1px] bg-white/10" />
          <div className="flex gap-4">
