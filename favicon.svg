@@ -1,0 +1,5 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="64" height="64" viewBox="0 0 64 64" role="img" aria-label="MechaClock">
+  <title>MechaClock</title>
+  <rect x="3" y="3" width="58" height="58" fill="#ffffff" stroke="#141716" stroke-width="4"/>
+  <circle cx="32" cy="32" r="19" stroke="#141716" stroke-width="5" stroke-linecap="square" stroke-linejoin="miter" fill="none"/><path d="M32 18V32L41 38" stroke="#141716" stroke-width="5" stroke-linecap="square" stroke-linejoin="miter" fill="none"/>
+</svg>
